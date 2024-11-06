@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border: 5px solid #ff66b2; /* Pink borderline */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #ff3399;
+            margin-bottom: 20px;
+        }
+
+        .timer-box, .result-box {
+            margin: 20px 0;
+        }
+
+        .timer-box p, .result-box p {
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 2px solid #ff66b2; /* Pink-colored stock borderline */
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        th {
+            background-color: #ffccf2; /* Light pink for header */
+            color: #333;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #fff;
+            color: #ff3399;
+            font-weight: bold;
+        }
+
+        /* Borderline styles for table */
+        .table-borderline {
+            border-radius: 15px;
+            border: 5px solid #ff66b2;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffe6f2;
+            border: 3px solid #ff66b2; /* Pink border for the result box */
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: #ff3399;
+            margin-bottom: 10px;
+        }
+
+        #result {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BORUTO UZUMAKI</h1>
+
+        <div class="timer-box">
+            <p><strong>Period Number:</strong> <span id="period1m">Loading...</span></p>
+            <p><strong>Timer:</strong> <span id="timer1m">00:00</span></p>
+        </div>
+
+        <!-- Result Table with Borderline -->
+        <table class="table-borderline">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="resultTable">
+                <!-- Rows will be dynamically updated -->
+            </tbody>
+        </table>
+
+        <!-- Upcoming Result Box -->
+        <div class="result-box">
+            <h2 class="result-title">Upcoming Result:</h2>
+            <p id="result">Loading...</p>
+        </div>
+    </div>
+
+    <script>
+        // Small Big Pattern
+        const pattern = ['SMALL', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL', 'BIG', 'SMALL'];
+
+        let currentPeriodIndex = 0; // Track the current pattern index
+        let previousPeriod = ''; // Store the previous period number for comparison
+
+        // Get HTML elements
+        const period1m = document.getElementById('period1m');
+        const timer1m = document.getElementById('timer1m');
+        const resultElement = document.getElementById('result');
+        const resultTable = document.getElementById('resultTable');
+
+        // Java Timer for 1-minute intervals
+        function startTimer() {
+            setInterval(function () {
+                const now = new Date();
+                const seconds = now.getUTCSeconds();
+                const remainingSeconds = 60 - seconds;
+                const minutes = now.getUTCMinutes();
+                const totalMinutes = now.getUTCHours() * 60 + minutes;
+
+                // Update period number for 1-minute interval
+                const periodNumber = `${now.getUTCFullYear()}${("0" + (now.getUTCMonth() + 1)).slice(-2)}${("0" + now.getUTCDate()).slice(-2)}1000${(10001 + totalMinutes)}`;
+                period1m.textContent = periodNumber;
+
+                // Update timer in format "  x x  :  x x" for 1-minute interval
+                const formattedTime = `   ${String(remainingSeconds).padStart(2, '0').split('').join(' ')}  :  ${'0'.repeat(2).split('').join(' ')}`;
+                timer1m.textContent = formattedTime;
+
+                // Show result and add to table when the period number changes
+                if (periodNumber !== previousPeriod) {
+                    previousPeriod = periodNumber;
+
+                    // Get next result in the pattern
+                    const newResult = pattern[currentPeriodIndex % pattern.length];
+                    resultElement.textContent = newResult;
+
+                    // Add new result to the result table
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `<td>${periodNumber}</td><td>${newResult}</td>`;
+                    resultTable.appendChild(newRow);
+
+                    // Increment the pattern index for the next result
+                    currentPeriodIndex++;
+                }
+            }, 1000); // Update every second
+        }
+
+        startTimer();
+    </script>
+</body>
+</html>
